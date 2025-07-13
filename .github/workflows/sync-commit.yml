@@ -1,0 +1,37 @@
+name: Update Spec with Latest Pangolin Commit
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Every day at 0:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-spec:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest commit from pangolin repo
+        id: pangolin
+        run: |
+          latest_commit=$(git ls-remote https://github.com/stevenlovegrove/Pangolin.git HEAD | cut -f1)
+          short_commit=${latest_commit:0:7}
+          echo "commit=$short_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Update Version field in spec file
+        run: |
+          sed -i -E "s/^(Version:\s*).*/\1${{ steps.pangolin.outputs.commit }}/" *.spec
+          echo "Updated spec file:"
+          grep Version: *.spec
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update spec Version to pangolin commit ${{ steps.pangolin.outputs.commit }}"
+          git push
