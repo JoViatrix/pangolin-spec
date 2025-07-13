@@ -7,7 +7,7 @@ License: MIT
 URL: https://github.com/stevenlovegrove/Pangolin
 
 
-Provides: libpango_python.so
+Provides: libpango_python.so()(64bit)
 
 
 BuildRequires: wayland-devel
