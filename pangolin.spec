@@ -6,6 +6,10 @@ Summary: Lightweight and portable utility libraries for prototyping 3D, numeric 
 License: MIT
 URL: https://github.com/stevenlovegrove/Pangolin
 
+
+Provides: libpango_python.so
+
+
 BuildRequires: wayland-devel
 BuildRequires: libxkbcommon-devel
 BuildRequires: gcc-c++
