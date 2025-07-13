@@ -21,6 +21,7 @@ BuildRequires: libdc1394-devel
 BuildRequires: libraw1394-devel
 BuildRequires: librealsense-devel
 BuildRequires: openni-devel
+BuildRequires: python3-setuptools
 BuildRequires: git
 
 %description
