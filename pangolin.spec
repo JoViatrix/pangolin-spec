@@ -24,10 +24,14 @@ BuildRequires: catch2-devel
 BuildRequires: libdc1394-devel
 BuildRequires: libraw1394-devel
 BuildRequires: librealsense-devel
-BuildRequires: openni-devel
 BuildRequires: python3-setuptools
 BuildRequires: python3-wheel
 BuildRequires: git
+
+%ifarch x86_64
+BuildRequires: openni-devel
+%endif
+
 
 %description
 Pangolin is a set of lightweight and portable utility libraries for prototyping 3D, numeric or video based programs and algorithms. It is used quite widely in the field of Computer Vision as a means to remove platform-specific boilerplate and make it easy to visualize data.
