@@ -22,6 +22,7 @@ BuildRequires: libraw1394-devel
 BuildRequires: librealsense-devel
 BuildRequires: openni-devel
 BuildRequires: python3-setuptools
+BuildRequires: python3-wheel
 BuildRequires: git
 
 %description
