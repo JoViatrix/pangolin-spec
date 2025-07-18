@@ -1,6 +1,9 @@
+%global commit 4235555
+%global datetimever 202507181445%{commit}
+
 Name: pangolin
-Version: b91d462
-Release: %autorelease
+Version: %{datetimever}
+Release: %autorelease.1
 Summary: Lightweight and portable utility libraries for prototyping 3D, numeric or video based programs and algorithms.
 
 License: MIT
@@ -39,14 +42,14 @@ Pangolin is a set of lightweight and portable utility libraries for prototyping 
 The general ethos of Pangolin is to minimize boilerplate and maximize portability and flexibility through simple interfaces and factories over things like windowing and video. It also offers a suite of utilities for interactive debugging, such as 3D manipulation, plotters, tweak variables, and a drop-down Quake-like console for python scripting and live tweaking.
 
 %prep
-git clone --recursive https://github.com/stevenlovegrove/Pangolin.git %{name}-%{version}
-cd %{name}-%{version}
-git checkout %{version}
+git clone --recursive https://github.com/stevenlovegrove/Pangolin.git %{name}-%{commit}
+cd %{name}-%{commit}
+git checkout %{commit}
 git submodule update --init --recursive
 
 
 %build
-%cmake -GNinja %{name}-%{version}
+%cmake -GNinja %{name}-%{commit}
 %cmake_build
 
 

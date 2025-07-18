@@ -15,23 +15,67 @@ jobs:
     steps:
       - name: Checkout this repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for changelog updates
 
-      - name: Fetch latest commit from pangolin repo
+      - name: Get latest Pangolin commit
         id: pangolin
         run: |
-          latest_commit=$(git ls-remote https://github.com/stevenlovegrove/Pangolin.git HEAD | cut -f1)
-          short_commit=${latest_commit:0:7}
-          echo "commit=$short_commit" >> "$GITHUB_OUTPUT"
+          latest_commit=$(git ls-remote https://github.com/stevenlovegrove/Pangolin.git HEAD | cut -c1-7)
+          echo "commit=$latest_commit" >> "$GITHUB_OUTPUT"
 
-      - name: Update Version field in spec file
+      - name: Get current commit from spec file
+        id: current
         run: |
-          sed -i -E "s/^(Version:\s*).*/\1${{ steps.pangolin.outputs.commit }}/" *.spec
-          echo "Updated spec file:"
-          grep Version: *.spec
+          current_commit=$(grep '^%global commit' *.spec | awk '{ print $3 }')
+          echo "current=$current_commit" >> "$GITHUB_OUTPUT"
+
+      - name: Check if update is needed
+        id: check
+        run: |
+          if [ "${{ steps.pangolin.outputs.commit }}" = "${{ steps.current.outputs.current }}" ]; then
+            echo "No new commit. Exiting gracefully."
+            echo "update_needed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "New commit detected."
+            echo "update_needed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Exit early if no update is needed
+        if: steps.check.outputs.update_needed == 'false'
+        run: |
+          echo "Spec is already up to date with commit ${{ steps.current.outputs.current }}"
+          exit 0
+
+      # Only if update is needed
+      - name: Generate version string
+        if: steps.check.outputs.update_needed == 'true'
+        id: version
+        run: |
+          timestamp=$(date -u +'%Y%m%d%H%M')
+          echo "version=${timestamp}${{ steps.pangolin.outputs.commit }}" >> "$GITHUB_OUTPUT"
+          echo "NEW_VERSION=${timestamp}${{ steps.pangolin.outputs.commit }}" >> $GITHUB_ENV
+
+      - name: Update spec macros
+        if: steps.check.outputs.update_needed == 'true'
+        run: |
+          sed -i -E "s|^%global commit .*|%global commit ${{ steps.pangolin.outputs.commit }}|" *.spec
+          sed -i -E "s|^%global datetimever .*|%global datetimever ${{ steps.version.outputs.version }}|" *.spec
+          sed -i -E "s|^(Version:\s*).*|\1%{datetimever}|" *.spec
+
+      - name: Run rpmdev-bumpspec action
+        if: steps.check.outputs.update_needed == 'true'
+        uses: netoarmando/rpmdev-bumpspec-action@v1
+        with:
+          specfile: 'pangolin.spec'
+          new: ${{ env.NEW_VERSION }}
+          userstring: "GitHub Actions <actions@github.com>"
+          comment: "Auto-update to Pangolin commit ${{ steps.pangolin.outputs.commit }}"
 
       - name: Commit and push changes
+        if: steps.check.outputs.update_needed == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -am "Update spec Version to pangolin commit ${{ steps.pangolin.outputs.commit }}"
+          git commit -am "Update spec to Pangolin commit ${{ steps.pangolin.outputs.commit }}"
           git push
