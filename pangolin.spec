@@ -1,9 +1,9 @@
-%global commit 4235555
-%global datetimever 202507181445%{commit}
+%global commit b91d462
+%global datetimever 202507181048b91d462
 
 Name: pangolin
-Version: %{datetimever}
-Release: %autorelease.1
+Version: 202507181048b91d462
+Release: 1%{?dist}
 Summary: Lightweight and portable utility libraries for prototyping 3D, numeric or video based programs and algorithms.
 
 License: MIT
@@ -81,5 +81,8 @@ git submodule update --init --recursive
 %{_libdir}/libtinyobj*
 
 %changelog
+* Fri Jul 18 2025 GitHub Actions <actions@github.com> - 202507181048b91d462-1
+- Auto-update to Pangolin commit b91d462
+
 %autochangelog
 
