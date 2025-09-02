@@ -1,8 +1,8 @@
-%global commit b91d462
-%global datetimever 202507181048b91d462
+%global commit eb51fea
+%global datetimever 202509020147eb51fea
 
 Name: pangolin
-Version: 202507181048b91d462
+Version: 202509020147eb51fea
 Release: 1%{?dist}
 Summary: Lightweight and portable utility libraries for prototyping 3D, numeric or video based programs and algorithms.
 
@@ -81,6 +81,9 @@ git submodule update --init --recursive
 %{_libdir}/libtinyobj*
 
 %changelog
+* Tue Sep 02 2025 GitHub Actions <actions@github.com> - 202509020147eb51fea-1
+- Auto-update to Pangolin commit eb51fea
+
 * Fri Jul 18 2025 GitHub Actions <actions@github.com> - 202507181048b91d462-1
 - Auto-update to Pangolin commit b91d462
 
